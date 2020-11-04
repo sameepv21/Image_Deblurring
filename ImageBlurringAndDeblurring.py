@@ -94,9 +94,8 @@ def findQR(A):
         q[:, i] = A[:, i]
         for j in range (0, i-1):
             qTranspose = getTranspose(q[:, j].reshape(row, 1))
-            print('qTranspose', qTranspose)
             r[j][i] = multiplyTwoMatricies(qTranspose, A[:, i].reshape(row, 1))
-            q[:, i] -= q[:, i] - multiplyScalarToVector(r[j][i], q[:, j])
+            q[:, i] = q[:, i] - multiplyScalarToVector(r[j][i], q[:, j])
         r[i][i] = getNorm(q[:, i].reshape(row, 1))
         q[:, i] = multiplyScalarToVector(1/r[i][i], q[:, i]).reshape((1, row))
     return [q, r]
