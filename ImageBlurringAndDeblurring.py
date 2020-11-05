@@ -2,16 +2,17 @@ import numpy as np
 import math
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
+from sympy import Matrix
+import scipy as sp
 
-
-mat1 = np.matrix([[1, 1], [2, 2], [3, 3]])
+# mat1 = np.matrix([[1, 1], [2, 2], [3, 3]])
 # mat2 = [[1, 2]]
 
 # answer = multiplyTwoMatricies(mat1, mat2)
 # print(answer)
 
-mat3 = np.zeros((3, 2))
-mat4 = np.zeros((3, 1))
+# mat3 = np.zeros((3, 2))
+# mat4 = np.zeros((3, 1))
 # answer = multiplyTwoMatricies(mat3, mat4)
 # print(answer)
 # print(answer.shape)
@@ -36,8 +37,6 @@ def multiplyTwoMatricies(A, B):
                 result[i][j] += (A[i][k] * B[k][j])
     return result
 
-# print('result is: \n', multiplyTwoMatricies(mat2, mat1))
-
 
 def getNorm(A):
     # Checked and Works Fine
@@ -46,8 +45,6 @@ def getNorm(A):
         norm += A[i]*A[i]
     return math.sqrt(norm)
 
-# print(getNorm(mat1))
-
 
 def getNormalisedVector(vector):
     # Checked and Works fine
@@ -55,8 +52,6 @@ def getNormalisedVector(vector):
     for i in range(0, len(vector)):
         vector[i] = vector[i]/length
     return vector
-
-# print(getNormalisedVector(mat1))
 
 def getTranspose(A):
     # Checked and Works fine
@@ -71,18 +66,14 @@ def getTranspose(A):
             result[j][i] = A[i][j]
     return result
 
-# print(getTranspose(mat1))
-
 def multiplyScalarToVector(scale, vect):
     # Checked and Works fine
     for i in range(0, len(vect)):
         vect[i] = scale*vect[i]
     return vect
 
-# print(mat1.reshape(3, 1))
-# print(multiplyScalarToVector(2, mat1.reshape(3, 1)))
-
 def findQR(A):
+    # Checked and Works fine
     dim4 = np.shape(A)
     size4 = np.size(A)
     row = dim4[0]
@@ -92,75 +83,97 @@ def findQR(A):
     r = np.zeros((col, col))
     for i in range(0, col):
         q[:, i] = A[:, i]
-        for j in range (0, i-1):
+        for j in range (0, i):
+            q[:, j] = getNormalisedVector(q[:, j])
             qTranspose = getTranspose(q[:, j].reshape(row, 1))
             r[j][i] = multiplyTwoMatricies(qTranspose, A[:, i].reshape(row, 1))
             q[:, i] = q[:, i] - multiplyScalarToVector(r[j][i], q[:, j])
-        r[i][i] = getNorm(q[:, i].reshape(row, 1))
-        q[:, i] = multiplyScalarToVector(1/r[i][i], q[:, i]).reshape((1, row))
+            q[:, j] = getNormalisedVector(q[:, j])
+        r[i][i] = getNorm(q[:, i])
+        q[:, i] = multiplyScalarToVector(1/r[i][i], q[:, i])
     return [q, r]
 
+#Only For Square symmetric matrix
+def getEigenValues(A):
+    #Checked and Works Fine
+    for i in range(0, np.size(A)*2):
+        [Q, R] = findQR(A)
+        A = multiplyTwoMatricies(R, Q)
+    eValues = np.zeros(len(A))
+    for i in range(0, len(A)):
+        eValues[i] = A[i][i]
+    return eValues
 
+def getSingularValues(A):
+    # Checked and Works fine
+    result = np.zeros(len(A))
+    for i in range(0, len(A)):
+        if(A[i] < 0):
+            A[i] = (-1) * A[i]
+        result[i] = math.sqrt(A[i])
+    return result
 
 mat5 = np.zeros((3, 3))
 mat5[0][0] = 1
-mat5[0][1] = 1
-mat5[1][0] = 1
-mat5[1][2] = 1
-mat5[2][1] = 1
+mat5[0][1] = 3
+mat5[0][2] = 4
+mat5[1][0] = 3
+mat5[1][1] = 1
+mat5[1][2] = 2
+mat5[2][0] = 4
+mat5[2][1] = 2
 mat5[2][2] = 1
-print(mat5)
 
-Q, R = findQR(mat5)
-print('Q is \n', Q)
-print('R is: \n', R)
-
-
-# def calculateSVD(eValues, eVectors, sv):
-#     U = np.zeros((m,m))
-#     V = np.zeros((n,n))
-#     sigma = np.zeros((m,n))
-    
-#     #Calculate V Matrix
-#     for i in range(0, len(eVectors[0])):
-#         V[:, i] = getNormalisedVector(eVectors[:, i])
-#     VT = getTranspose(V)
-
-#     #Calculate sigma Matrix
-#     print(len(sv))   
-#     for i in range(0, len(sv)):
-#         sigma[i][i] = sv[i]
-
-#     #Calculate U Matrix (bV[i]/sv[i])
-#     index = 0
-#     # print(index)
-#     # # print(m, n)
-#     # # for i in range(0, n):
-#     # #     if(index < n):
-#     # #         U[:, i] = np.dot(b, V[:, index])
-#     # #         index+=1
-#     # # print(U.shape)
-#     return U, sigma, VT
-
-# def getSingularValues(A):
-#     result = np.zeros(len(A))
-#     for i in range(0, len(A)):
-#         result[i] = math.sqrt(A[i])
+# def getEigenVectors(A, ev):
+#     # Find A-(Lambda)I
+#     I = np.identity(len(A))
+#     print(I)
+#     result = np.zeros((len(A), len(A)))
+#     for i in range(0, len(ev)):
+#         temp = A - multiplyScalarToVector(ev[i], I)
+#         print('temp is: \n', temp)
+#         temp = Matrix(temp)
+#         eVector = sp.
+#         print('eksjdfn\n', len(eVector))
+#         print('moiwpeir\n', eVector)
+#         for j in range(0, len(eVector)):
+#             result[:, j] = eVector
 #     return result
 
-# def getEigenValues(A):
-#     result, temp = findQR(A)
-#     resultCheck, temp2 = np.linalg.qr(A)
-#     print('result is: ', result)
-#     print('resultCheck is: ', resultCheck)
-#     for i in range(0, 4):
-#         [Q, R] = findQR(A)
-#         A = np.dot(R, Q)
-#     eValues = np.zeros(len(A))
-#     for i in range(0, 2):
-#         eValues[i] = A[i][i]
 
-#     return eValues
+def calculateSVD(eValues, eVectors, sv):
+    m = 3
+    n = 3
+    U = np.zeros((m,m))
+    V = np.zeros((n,n))
+    sigma = np.zeros((m,n))
+
+    # V
+    for i in range(0, len(eValues)):
+        V[:, i] = getNormalisedVector(eVectors[:, i])
+
+    # Sigma
+    for i in range(0, len(sv)):
+        sigma[i][i] = eValues[i]
+    
+    # U
+    print(eVectors[:, i])
+    print(mat5)
+    print(multiplyTwoMatricies(mat5, eVectors[:, i].reshape(m, 1)))
+    # for i in range(0, m):
+    return sigma, getTranspose(V)
+
+
+evalu, evect = np.linalg.eig(mat5)
+getSigma, getV = calculateSVD(evalu, evect, getSingularValues(evalu))
+
+qw,er,ty = np.linalg.svd(mat5)
+
+print('getV: \n', getV)
+print('ty: \n', ty)
+
+print('getSigma \n', getSigma)
+print('er: \n', er)
 
 # #Read and show the image
 # img = Image.open('C:\\Users\\16692\\Documents\\ExtraProjects\\Image Blurring and Deblurring\\sample.jpg')
@@ -179,11 +192,6 @@ print('R is: \n', R)
 # area = m*n
 
 # #Find the eigenvalues of b(Transpose)b
-# matrix = [[1,0], [2,4]]
-# print('matrix transpose is: ', np.transpose(matrix))
-# answer = getEigenValues(matrix)
-# answerCheck, answerCheck2 = np.linalg.eig(matrix)
-# #For this, we require to find b(Transpose)
 # bT = getTranspose(b)
 # #print(bT)
 
@@ -199,24 +207,24 @@ print('R is: \n', R)
 # #Compute SVD
 # UCheck, sigmaCheck, VTCheck = np.linalg.svd(b)
 # U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
-# # print('VT is: ', VT[:, 0])
-# # print('VCheck is: ', VTCheck[:, 0])
+# print('VT is: ', VT[:, 0])
+# print('VCheck is: ', VTCheck[:, 0])
 
 # #Blurring an image by taking small number of singular values(say 20)
 # k = 20
 
 # #Performing Slicing operations
-# resultantBlurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
+# # resultantBlurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
 
 # #Deblurring an image by taking large number of singular values (say 1000)
 # k = 1000
 
 # #Performing Slicing operations
-# resultantDeblurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
+# # resultantDeblurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
 # f, axes = plt.subplots(2,2)
 # plt.suptitle('Results')
 # axes[0][0].imshow(img)
 # axes[0][1].imshow(img2)
-# axes[1][0].imshow(resultantBlurredMatrixApproximated)
-# axes[1][1].imshow(resultantDeblurredMatrixApproximated)
-# # plt.show()
+# # axes[1][0].imshow(resultantBlurredMatrixApproximated)
+# # axes[1][1].imshow(resultantDeblurredMatrixApproximated)
+# # # plt.show()
