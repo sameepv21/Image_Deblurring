@@ -142,8 +142,8 @@ mat5[2][2] = 1
 
 
 def calculateSVD(eValues, eVectors, sv):
-    m = 3
-    n = 3
+    # m = 3
+    # n = 3
     U = np.zeros((m,m))
     V = np.zeros((n,n))
     sigma = np.zeros((m,n))
@@ -154,77 +154,81 @@ def calculateSVD(eValues, eVectors, sv):
 
     # Sigma
     for i in range(0, len(sv)):
-        sigma[i][i] = eValues[i]
+        sigma[i][i] = sv[i]
     
     # U
-    print(eVectors[:, i])
-    print(mat5)
-    print(multiplyTwoMatricies(mat5, eVectors[:, i].reshape(m, 1)))
-    # for i in range(0, m):
-    return sigma, getTranspose(V)
+    # print(eVectors[:, i])
+    # print(mat5)
+    # print('multiplication is: ', multiplyScalarToVector(1/sv[0], multiplyTwoMatricies(mat5, eVectors[:, i].reshape(n, 1))).reshape(1, n))
+    for i in range(0, m):
+        U[:, i] = multiplyScalarToVector(1/sv[i], multiplyTwoMatricies(mat5, eVectors[:, i].reshape(n, 1))).reshape(1, n)
+    return U, sigma, getTranspose(V)
 
 
-evalu, evect = np.linalg.eig(mat5)
-getSigma, getV = calculateSVD(evalu, evect, getSingularValues(evalu))
+# evalu, evect = np.linalg.eig(mat5)
+# getU, getSigma, getV = calculateSVD(evalu, evect, getSingularValues(evalu))
 
-qw,er,ty = np.linalg.svd(mat5)
+# qw,er,ty = np.linalg.svd(mat5)
 
-print('getV: \n', getV)
-print('ty: \n', ty)
+# print('getV: \n', getV)
+# print('ty: \n', ty)
 
-print('getSigma \n', getSigma)
-print('er: \n', er)
+# print('getSigma \n', getSigma)
+# print('er: \n', er)
 
-# #Read and show the image
-# img = Image.open('C:\\Users\\16692\\Documents\\ExtraProjects\\Image Blurring and Deblurring\\sample.jpg')
-# #img.show()
+# print('getU: \n', getU)
+# print('qw: \n', qw)
 
-# #Convert into gray scale
-# img2 = ImageOps.grayscale(img)
-# #img2.show()
+#Read and show the image
+img = Image.open('C:\\Users\\16692\\Documents\\ExtraProjects\\Image Blurring and Deblurring\\sample.jpg')
+#img.show()
 
-# #Convert image into matrix
-# b = np.array(img2)
+#Convert into gray scale
+img2 = ImageOps.grayscale(img)
+#img2.show()
 
-# #Fetch the dimensions of image
-# print('The dimension of the image is: ', b.shape)
-# n,m = b.shape
-# area = m*n
+#Convert image into matrix
+b = np.array(img2)
 
-# #Find the eigenvalues of b(Transpose)b
-# bT = getTranspose(b)
-# #print(bT)
+#Fetch the dimensions of image
+print('The dimension of the image is: ', b.shape)
+n,m = b.shape
+area = m*n
 
-# #Find bTb
-# S = np.dot(b, bT)
+#Find the eigenvalues of b(Transpose)b
+bT = getTranspose(b)
+#print(bT)
 
-# #Find EigenValues of S
-# eValues, eVectors = np.linalg.eig(S)
+#Find bTb
+S = np.dot(b, bT)
 
-# #Find Singular Values
-# singValues = getSingularValues(eValues)
+#Find EigenValues of S
+eValues, eVectors = np.linalg.eig(S)
 
-# #Compute SVD
-# UCheck, sigmaCheck, VTCheck = np.linalg.svd(b)
-# U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
-# print('VT is: ', VT[:, 0])
-# print('VCheck is: ', VTCheck[:, 0])
+#Find Singular Values
+singValues = getSingularValues(eValues)
 
-# #Blurring an image by taking small number of singular values(say 20)
-# k = 20
+#Compute SVD
+UCheck, sigmaCheck, VTCheck = np.linalg.svd(b)
+U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
+print('VT is: ', VT[:, 0])
+print('VCheck is: ', VTCheck[:, 0])
 
-# #Performing Slicing operations
-# # resultantBlurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
+#Blurring an image by taking small number of singular values(say 20)
+k = 20
 
-# #Deblurring an image by taking large number of singular values (say 1000)
-# k = 1000
+#Performing Slicing operations
+# resultantBlurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
 
-# #Performing Slicing operations
-# # resultantDeblurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
-# f, axes = plt.subplots(2,2)
-# plt.suptitle('Results')
-# axes[0][0].imshow(img)
-# axes[0][1].imshow(img2)
-# # axes[1][0].imshow(resultantBlurredMatrixApproximated)
-# # axes[1][1].imshow(resultantDeblurredMatrixApproximated)
-# # # plt.show()
+#Deblurring an image by taking large number of singular values (say 1000)
+k = 1000
+
+#Performing Slicing operations
+# resultantDeblurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
+f, axes = plt.subplots(2,2)
+plt.suptitle('Results')
+axes[0][0].imshow(img)
+axes[0][1].imshow(img2)
+# axes[1][0].imshow(resultantBlurredMatrixApproximated)
+# axes[1][1].imshow(resultantDeblurredMatrixApproximated)
+# # plt.show()
