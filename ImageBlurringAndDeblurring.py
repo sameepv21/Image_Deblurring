@@ -96,8 +96,8 @@ def findQR(A):
 #Only For Square symmetric matrix
 def getEigenValues(A):
     #Checked and Works Fine
-    for i in range(0, np.size(A)*2):
-        print('eherherher')
+    for i in range(0, np.size(A)):
+        # print('work')
         [Q, R] = findQR(A)
         A = multiplyTwoMatricies(R, Q)
     eValues = np.zeros(len(A))
@@ -156,14 +156,12 @@ def calculateSVD(eValues, eVectors, sv):
     # Sigma
     for i in range(0, len(sv)):
         sigma[i][i] = sv[i]
-    
-    print('shape of b is \n', b.shape)
-    print('hsnfhn', multiplyTwoMatricies(b, eVectors[:, 0].reshape(m, 1)).shape)
 
     # U
-    # for i in range(0, m):
-    #     temp = multiplyTwoMatricies(b, eVectors[:, i].reshape(m, 1)).reshape(1, m)
-    #     U[:, i] = multiplyScalarToVector(1/sv[i], temp)
+    for i in range(0, m):
+        # print('wait here also')
+        temp = multiplyTwoMatricies(b, eVectors[:, i].reshape(m, 1)).reshape(1, m)
+        U[:, i] = multiplyScalarToVector(1/sv[i], temp)
     return U, sigma, getTranspose(V)
 
 
@@ -182,7 +180,7 @@ def calculateSVD(eValues, eVectors, sv):
 # print('qw: \n', qw)
 
 #Read and show the image
-img = Image.open('C:\\Users\\16692\\Documents\\ExtraProjects\\Image Blurring and Deblurring\\sample.jpg')
+img = Image.open('C:\\Users\\16692\\Documents\\ExtraProjects\\Image Blurring and Deblurring\\sample.png')
 #img.show()
 
 #Convert into gray scale
@@ -203,41 +201,42 @@ bT = getTranspose(b)
 
 #Find bTb
 S = np.dot(b, bT)
-print('Shape of S', S.shape)
 
-#Find EigenValues of S
+# Find EigenValues of S
 eValues1, eVectors = np.linalg.eig(S)
-print('Here1')
-# eValues = getEigenValues(S)
+eValues = getEigenValues(S)
 
-#Find Singular Values
-print('Here2')
-singValues = getSingularValues(eValues1)
+# Find Singular Values
+singValues = getSingularValues(eValues)
 
-#Compute SVD
+# Compute SVD
 UCheck, sigmaCheck, VTCheck = np.linalg.svd(b)
-U, Sigma, VT = calculateSVD(eValues1, eVectors, singValues)
-print(Sigma)
-# U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
-# print('VT is: ', VT[:, 0])
-# print('VCheck is: ', VTCheck[:, 0])
+U, Sigma, VT = calculateSVD(eValues, eVectors, singValues)
 
-#Blurring an image by taking small number of singular values(say 20)
-k = 20
+# Blurring an image by taking small number of singular values(say 20)
+k = 5
 
-#Performing Slicing operations
-print('Here3')
-resultantBlurredMatrixApproximated = UCheck[:,:k] @ sigmaCheck[0:k,:k] @ VTCheck[:k,:]
+# Performing Slicing operations
+resultantBlurredMatrixApproximated = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
 
-#Deblurring an image by taking large number of singular values (say 1000)
-k = 1000
+# Deblurring an image by taking large number of singular values (say 1000)
+k = 10
+resultantDeblurredMatrixApproximated = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
 
-#Performing Slicing operations
-resultantDeblurredMatrixApproximated = UCheck[:,:k] @ sigmaCheck[0:k,:k] @ VTCheck[:k,:]
+# Performing Slicing operations
+resultantDeblurredMatrixApproximated = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
+
+# Final Image
+k = 100
+resultantDeblurredMatrixApproximatedFinal = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
+
+# Show Result/Output
 f, axes = plt.subplots(2,2)
 plt.suptitle('Results')
 axes[0][0].imshow(img)
-axes[0][1].imshow(img2)
-# axes[1][0].imshow(resultantBlurredMatrixApproximated)
-# axes[1][1].imshow(resultantDeblurredMatrixApproximated)
-# # plt.show()
+axes[0][1].imshow(resultantBlurredMatrixApproximated, cmap='gray',vmin=0, vmax=255)
+axes[1][0].imshow(resultantDeblurredMatrixApproximated, cmap='gray',vmin=0, vmax=255)
+axes[1][1].imshow(resultantDeblurredMatrixApproximatedFinal, cmap='gray',vmin=0, vmax=255)
+plt.show()
+
+#https://www.google.com/search?q=circle+with+background&rlz=1C1CHBH_enUS881US881&tbm=isch&source=iu&ictx=1&fir=WLkjRe_Hdz_iBM%252CpEOBIXriMadvJM%252C_&vet=1&usg=AI4_-kSdzHQYwUGyqNjZfzDcy5EpSKvClQ&sa=X&ved=2ahUKEwj6i_mfyu3sAhVRxTgGHVXnC9IQ9QF6BAgDEG4&biw=1536&bih=722#imgrc=WLkjRe_Hdz_iBM
