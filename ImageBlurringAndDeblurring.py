@@ -2,20 +2,34 @@ import numpy as np
 import math
 from PIL import Image, ImageOps
 import matplotlib.pyplot as plt
-from sympy import Matrix
-import scipy as sp
 
-# mat1 = np.matrix([[1, 1], [2, 2], [3, 3]])
-# mat2 = [[1, 2]]
+'''
+CODE CREATED BY MEMBERS OF GROUP 32
+1. Sameep Vani AU1940049
+2. Kavya Patel AU1040144
+3. Kashvi Gandhi AU1940175
+4. Kairavi Shah AU1940177
+'''
 
-# answer = multiplyTwoMatricies(mat1, mat2)
-# print(answer)
+'''
+List of functions created
+1. multiplyTwoMatrices(A, B)
+2. getNorm(A)
+3. getNormalisedVector(vector)
+4. getTranspose(A)
+5. multiplyScalarToVector(scale, vect)
+6. findQR(A)
+7. getEigenValues(A)
+8. getSingularValues(A)
+9. calculateSVD(eValues, eVectors, sv)
+'''
 
-# mat3 = np.zeros((3, 2))
-# mat4 = np.zeros((3, 1))
-# answer = multiplyTwoMatricies(mat3, mat4)
-# print(answer)
-# print(answer.shape)
+'''
+List of inbuilt libraries/functions used
+1. PIL for image reading
+2. Matplotlib for showing the result
+3. numpy.linalg for checking the answers
+'''
 
 def multiplyTwoMatricies(A, B):
     # Checked and worked correctly
@@ -32,7 +46,6 @@ def multiplyTwoMatricies(A, B):
     result = np.zeros((m1, n2))
     for i in range(0, m1):
         for j in range(0, n2):
-            #result[i][j] = 0
             for k in range(0, m2):
                 result[i][j] += (A[i][k] * B[k][j])
     return result
@@ -97,7 +110,6 @@ def findQR(A):
 def getEigenValues(A):
     #Checked and Works Fine
     for i in range(0, np.size(A)):
-        # print('work')
         [Q, R] = findQR(A)
         A = multiplyTwoMatricies(R, Q)
     eValues = np.zeros(len(A))
@@ -113,34 +125,6 @@ def getSingularValues(A):
             A[i] = (-1) * A[i]
         result[i] = math.sqrt(A[i])
     return result
-
-mat5 = np.zeros((3, 3))
-mat5[0][0] = 1
-mat5[0][1] = 3
-mat5[0][2] = 4
-mat5[1][0] = 3
-mat5[1][1] = 1
-mat5[1][2] = 2
-mat5[2][0] = 4
-mat5[2][1] = 2
-mat5[2][2] = 1
-
-# def getEigenVectors(A, ev):
-#     # Find A-(Lambda)I
-#     I = np.identity(len(A))
-#     print(I)
-#     result = np.zeros((len(A), len(A)))
-#     for i in range(0, len(ev)):
-#         temp = A - multiplyScalarToVector(ev[i], I)
-#         print('temp is: \n', temp)
-#         temp = Matrix(temp)
-#         eVector = sp.
-#         print('eksjdfn\n', len(eVector))
-#         print('moiwpeir\n', eVector)
-#         for j in range(0, len(eVector)):
-#             result[:, j] = eVector
-#     return result
-
 
 def calculateSVD(eValues, eVectors, sv):
     # m = 3
@@ -164,28 +148,11 @@ def calculateSVD(eValues, eVectors, sv):
         U[:, i] = multiplyScalarToVector(1/sv[i], temp)
     return U, sigma, getTranspose(V)
 
-
-# evalu, evect = np.linalg.eig(mat5)
-# getU, getSigma, getV = calculateSVD(evalu, evect, getSingularValues(evalu))
-
-# qw,er,ty = np.linalg.svd(mat5)
-
-# print('getV: \n', getV)
-# print('ty: \n', ty)
-
-# print('getSigma \n', getSigma)
-# print('er: \n', er)
-
-# print('getU: \n', getU)
-# print('qw: \n', qw)
-
 #Read and show the image
-img = Image.open('C:\\Users\\16692\\Documents\\ExtraProjects\\Image Blurring and Deblurring\\sample.png')
-#img.show()
+img = Image.open('C:\\Users\\16692\\Documents\\ExtraProjects\\Image Blurring and Deblurring\\sampleOwn.png')
 
 #Convert into gray scale
 img2 = ImageOps.grayscale(img)
-#img2.show()
 
 #Convert image into matrix
 b = np.array(img2)
@@ -197,7 +164,6 @@ area = m*n
 
 #Find the eigenvalues of b(Transpose)b
 bT = getTranspose(b)
-#print(bT)
 
 #Find bTb
 S = np.dot(b, bT)
@@ -207,14 +173,14 @@ eValues1, eVectors = np.linalg.eig(S)
 eValues = getEigenValues(S)
 
 # Find Singular Values
-singValues = getSingularValues(eValues)
+singValues = getSingularValues(eValues1)
 
 # Compute SVD
 UCheck, sigmaCheck, VTCheck = np.linalg.svd(b)
 U, Sigma, VT = calculateSVD(eValues, eVectors, singValues)
 
 # Blurring an image by taking small number of singular values(say 20)
-k = 5
+k = 1
 
 # Performing Slicing operations
 resultantBlurredMatrixApproximated = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
@@ -227,7 +193,7 @@ resultantDeblurredMatrixApproximated = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
 resultantDeblurredMatrixApproximated = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
 
 # Final Image
-k = 100
+k = 1000
 resultantDeblurredMatrixApproximatedFinal = U[:,:k] @ Sigma[0:k,:k] @ VT[:k,:]
 
 # Show Result/Output
@@ -239,4 +205,48 @@ axes[1][0].imshow(resultantDeblurredMatrixApproximated, cmap='gray',vmin=0, vmax
 axes[1][1].imshow(resultantDeblurredMatrixApproximatedFinal, cmap='gray',vmin=0, vmax=255)
 plt.show()
 
-#https://www.google.com/search?q=circle+with+background&rlz=1C1CHBH_enUS881US881&tbm=isch&source=iu&ictx=1&fir=WLkjRe_Hdz_iBM%252CpEOBIXriMadvJM%252C_&vet=1&usg=AI4_-kSdzHQYwUGyqNjZfzDcy5EpSKvClQ&sa=X&ved=2ahUKEwj6i_mfyu3sAhVRxTgGHVXnC9IQ9QF6BAgDEG4&biw=1536&bih=722#imgrc=WLkjRe_Hdz_iBM
+
+'''
+mat5 = np.zeros((3, 3))
+mat5[0][0] = 1
+mat5[0][1] = 3
+mat5[0][2] = 4
+mat5[1][0] = 3
+mat5[1][1] = 1
+mat5[1][2] = 2
+mat5[2][0] = 4
+mat5[2][1] = 2
+mat5[2][2] = 1
+
+def getEigenVectors(A, ev):
+    # Find A-(Lambda)I
+    I = np.identity(len(A))
+    print(I)
+    result = np.zeros((len(A), len(A)))
+    for i in range(0, len(ev)):
+        temp = A - multiplyScalarToVector(ev[i], I)
+        print('temp is: \n', temp)
+        temp = Matrix(temp)
+        eVector = sp.
+        print('eksjdfn\n', len(eVector))
+        print('moiwpeir\n', eVector)
+        for j in range(0, len(eVector)):
+            result[:, j] = eVector
+    return result
+
+
+mat1 = np.matrix([[1, 1], [2, 2], [3, 3]])
+mat2 = [[1, 2]]
+
+answer = multiplyTwoMatricies(mat1, mat2)
+print(answer)
+
+mat3 = np.zeros((3, 2))
+mat4 = np.zeros((3, 1))
+answer = multiplyTwoMatricies(mat3, mat4)
+print(answer)
+print(answer.shape)
+
+link for sample image - https://www.google.com/search?q=circle+with+background&rlz=1C1CHBH_enUS881US881&tbm=isch&source=iu&ictx=1&fir=WLkjRe_Hdz_iBM%252CpEOBIXriMadvJM%252C_&vet=1&usg=AI4_-kSdzHQYwUGyqNjZfzDcy5EpSKvClQ&sa=X&ved=2ahUKEwj6i_mfyu3sAhVRxTgGHVXnC9IQ9QF6BAgDEG4&biw=1536&bih=722#imgrc=WLkjRe_Hdz_iBM
+
+'''
