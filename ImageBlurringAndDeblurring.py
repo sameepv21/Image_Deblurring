@@ -164,7 +164,7 @@ def calculateSVD(eValues, eVectors, sv):
     # for i in range(0, m):
     #     temp = multiplyTwoMatricies(b, eVectors[:, i].reshape(m, 1)).reshape(1, m)
     #     U[:, i] = multiplyScalarToVector(1/sv[i], temp)
-    # return U, sigma, getTranspose(V)
+    return U, sigma, getTranspose(V)
 
 
 # evalu, evect = np.linalg.eig(mat5)
