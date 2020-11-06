@@ -97,6 +97,7 @@ def findQR(A):
 def getEigenValues(A):
     #Checked and Works Fine
     for i in range(0, np.size(A)*2):
+        print('eherherher')
         [Q, R] = findQR(A)
         A = multiplyTwoMatricies(R, Q)
     eValues = np.zeros(len(A))
@@ -144,9 +145,9 @@ mat5[2][2] = 1
 def calculateSVD(eValues, eVectors, sv):
     # m = 3
     # n = 3
-    U = np.zeros((m,m))
-    V = np.zeros((n,n))
-    sigma = np.zeros((m,n))
+    U = np.zeros((n,n))
+    V = np.zeros((m,m))
+    sigma = np.zeros((n,m))
 
     # V
     for i in range(0, len(eValues)):
@@ -156,15 +157,14 @@ def calculateSVD(eValues, eVectors, sv):
     for i in range(0, len(sv)):
         sigma[i][i] = sv[i]
     
-    print('hsnfhn', multiplyTwoMatricies(b, eVectors[:, i].reshape(n, 1)).reshape(1, n))
+    print('shape of b is \n', b.shape)
+    print('hsnfhn', multiplyTwoMatricies(b, eVectors[:, 0].reshape(m, 1)).shape)
 
     # U
-    # print(eVectors[:, i])
-    # print(mat5)
-    # print('multiplication is: ', multiplyScalarToVector(1/sv[0], multiplyTwoMatricies(mat5, eVectors[:, i].reshape(n, 1))).reshape(1, n))
-    for i in range(0, m):
-        U[:, i] = multiplyScalarToVector(1/sv[i], multiplyTwoMatricies(b, eVectors[:, i].reshape(n, 1)).reshape(1, n))
-    return U, sigma, getTranspose(V)
+    # for i in range(0, m):
+    #     temp = multiplyTwoMatricies(b, eVectors[:, i].reshape(m, 1)).reshape(1, m)
+    #     U[:, i] = multiplyScalarToVector(1/sv[i], temp)
+    # return U, sigma, getTranspose(V)
 
 
 # evalu, evect = np.linalg.eig(mat5)
@@ -203,16 +203,22 @@ bT = getTranspose(b)
 
 #Find bTb
 S = np.dot(b, bT)
+print('Shape of S', S.shape)
 
 #Find EigenValues of S
-eValues, eVectors = np.linalg.eig(S)
+eValues1, eVectors = np.linalg.eig(S)
+print('Here1')
+# eValues = getEigenValues(S)
 
 #Find Singular Values
-singValues = getSingularValues(eValues)
+print('Here2')
+singValues = getSingularValues(eValues1)
 
 #Compute SVD
 UCheck, sigmaCheck, VTCheck = np.linalg.svd(b)
-U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
+U, Sigma, VT = calculateSVD(eValues1, eVectors, singValues)
+print(Sigma)
+# U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
 # print('VT is: ', VT[:, 0])
 # print('VCheck is: ', VTCheck[:, 0])
 
@@ -220,13 +226,14 @@ U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
 k = 20
 
 #Performing Slicing operations
-# resultantBlurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
+print('Here3')
+resultantBlurredMatrixApproximated = UCheck[:,:k] @ sigmaCheck[0:k,:k] @ VTCheck[:k,:]
 
 #Deblurring an image by taking large number of singular values (say 1000)
 k = 1000
 
 #Performing Slicing operations
-# resultantDeblurredMatrixApproximated = UCheck[:,:k] @ sigma[0:k,:k] @ VTCheck[:k,:]
+resultantDeblurredMatrixApproximated = UCheck[:,:k] @ sigmaCheck[0:k,:k] @ VTCheck[:k,:]
 f, axes = plt.subplots(2,2)
 plt.suptitle('Results')
 axes[0][0].imshow(img)
