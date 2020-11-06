@@ -156,12 +156,14 @@ def calculateSVD(eValues, eVectors, sv):
     for i in range(0, len(sv)):
         sigma[i][i] = sv[i]
     
+    print('hsnfhn', multiplyTwoMatricies(b, eVectors[:, i].reshape(n, 1)).reshape(1, n))
+
     # U
     # print(eVectors[:, i])
     # print(mat5)
     # print('multiplication is: ', multiplyScalarToVector(1/sv[0], multiplyTwoMatricies(mat5, eVectors[:, i].reshape(n, 1))).reshape(1, n))
     for i in range(0, m):
-        U[:, i] = multiplyScalarToVector(1/sv[i], multiplyTwoMatricies(mat5, eVectors[:, i].reshape(n, 1))).reshape(1, n)
+        U[:, i] = multiplyScalarToVector(1/sv[i], multiplyTwoMatricies(b, eVectors[:, i].reshape(n, 1)).reshape(1, n))
     return U, sigma, getTranspose(V)
 
 
@@ -211,8 +213,8 @@ singValues = getSingularValues(eValues)
 #Compute SVD
 UCheck, sigmaCheck, VTCheck = np.linalg.svd(b)
 U, sigma, VT = calculateSVD(eValues, eVectors, singValues)
-print('VT is: ', VT[:, 0])
-print('VCheck is: ', VTCheck[:, 0])
+# print('VT is: ', VT[:, 0])
+# print('VCheck is: ', VTCheck[:, 0])
 
 #Blurring an image by taking small number of singular values(say 20)
 k = 20
